@@ -25,7 +25,7 @@ function AppContent() {
   return (
     <>
       <Navbar />
-      <main className="flex-grow">
+      <main className="flex-grow w-full max-w-lg mx-auto px-2 sm:px-4">
         <Routes>
           <Route path="/auth" element={user ? <Navigate to="/" /> : <AuthPage />} />
           <Route element={<ProtectedRoute />}>
