@@ -398,7 +398,7 @@ const GraphSVG = (
           </Button>
         )}
       </div>
-      <div className="overflow-x-auto pb-2">{GraphSVG}</div>
+      <div className="overflow-x-auto w-full pb-2">{GraphSVG}</div>
       {displayMode === "short" && (
         <p className="text-xs text-muted-foreground text-center mt-2">
           Mostrando los últimos 5 días. Pulsa{" "}

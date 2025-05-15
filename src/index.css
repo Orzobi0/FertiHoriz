@@ -59,7 +59,10 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
-
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
 /* Custom gradient background */
 body {
   background-image: linear-gradient(to bottom right, hsl(var(--primary) / 0.1), hsl(var(--secondary) / 0.1), transparent);

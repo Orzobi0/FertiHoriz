@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button.jsx';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx';
-import { Dialog, DialogTrigger } from '@/components/ui/dialog.jsx';
+import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog.jsx';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { toast } from '@/components/ui/use-toast.jsx';
 import { PlusCircle, RefreshCw, Edit3, Trash2 } from 'lucide-react';
@@ -209,70 +208,66 @@ const DashboardPage = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-              <Dialog open={isAddRecordModalOpen} onOpenChange={setIsAddRecordModalOpen}>
-                <DialogTrigger asChild>
-                  <Button 
-                    onClick={() => { resetForm(); }}
-                    className="w-full sm:w-auto bg-gradient-to-r from-primary to-pink-400 hover:from-primary/90 hover:to-pink-400/90 text-white shadow-md" 
-                    disabled={!currentCycle}
-                  >
-                    <PlusCircle className="mr-2 h-5 w-5" /> Añadir Registro
-                  </Button>
-                </DialogTrigger>
-                <RecordDialog
-                  isOpen={isAddRecordModalOpen} 
-                  onOpenChange={setIsAddRecordModalOpen}
-                  handleSubmit={handleAddRecord}
-                  formData={formData}
-                  handleChange={handleFormChange}
-                  dialogTitle="Añadir Nuevo Registro"
-                  dialogDescription="Ingresa los datos de hoy."
-                  submitButtonText="Guardar Registro"
-                />
-              </Dialog>
-
-              <Dialog open={isNewCycleModalOpen} onOpenChange={setIsNewCycleModalOpen}>
-                <DialogTrigger asChild>
-                   <Button 
-                     variant="outline" 
-                     className="w-full sm:w-auto border-secondary text-secondary hover:bg-secondary/10 shadow-md"
-                    >
-                    <RefreshCw className="mr-2 h-5 w-5" /> Iniciar Nuevo Ciclo
-                  </Button>
-                </DialogTrigger>
-                <NewCycleDialog
-                  isOpen={isNewCycleModalOpen}
-                  onOpenChange={setIsNewCycleModalOpen}
-                  onConfirm={handleStartNewCycle}
-                />
-              </Dialog>
-            </div>
-            {currentCycle ? (
-              <>
-                <CycleGraph cycle={currentCycle} displayMode="short" />
-                <CycleRecordList 
-                  cycle={currentCycle} 
-                  onEditRecord={(record) => openEditModal(record)}
-                  onDeleteRecord={(recordId) => confirmDeleteRecord(recordId)}
-                />
-              </>
-            ) : (
-              <div className="text-center py-10">
-                <p className="text-xl text-muted-foreground mb-4">Parece que no tienes ningún ciclo registrado.</p>
-                 <Dialog open={isNewCycleModalOpen} onOpenChange={setIsNewCycleModalOpen}>
+                  <Dialog open={isAddRecordModalOpen} onOpenChange={setIsAddRecordModalOpen}>
                     <DialogTrigger asChild>
-                        <Button className="bg-primary text-primary-foreground">
-                           <RefreshCw className="mr-2 h-5 w-5" /> Comienza tu Primer Ciclo
-                        </Button>
+                      <Button
+                        onClick={resetForm}
+                        className="w-full sm:w-auto bg-gradient-to-r from-primary to-pink-400 hover:from-primary/90 hover:to-pink-400/90 text-white shadow-md"
+                        disabled={!currentCycle}
+                      >
+                        <PlusCircle className="mr-2 h-5 w-5" /> Añadir Registro
+                      </Button>
                     </DialogTrigger>
-                     <NewCycleDialog
-                        isOpen={isNewCycleModalOpen}
-                        onOpenChange={setIsNewCycleModalOpen}
-                        onConfirm={handleStartNewCycle}
-                    />
+                    <DialogContent className="sm:max-w-[425px]">
+                      <RecordDialog
+                        handleSubmit={handleAddRecord}
+                        formData={formData}
+                        handleChange={handleFormChange}
+                        dialogTitle="Añadir Nuevo Registro"
+                        dialogDescription="Ingresa los datos de hoy."
+                        submitButtonText="Guardar Registro"
+                      />
+                    </DialogContent>
+                  </Dialog>
+                          {/* Iniciar Nuevo Ciclo */}
+                          <Dialog open={isNewCycleModalOpen} onOpenChange={setIsNewCycleModalOpen}>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="w-full sm:w-auto border-secondary text-secondary hover:bg-secondary/10 shadow-md"
+                              >
+                                <RefreshCw className="mr-2 h-5 w-5" /> Iniciar Nuevo Ciclo
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[425px]">
+                              <NewCycleDialog
+                                onConfirm={handleStartNewCycle}
+                                onOpenChange={setIsNewCycleModalOpen}
+                              />
+                            </DialogContent>
+                          </Dialog>
+            </div>
+            {currentCycle && <CycleGraph cycle={currentCycle} />}
+            {/* Si no hay ciclos */}
+            {!currentCycle && (
+              <div className="text-center py-10">
+                <p className="text-xl text-muted-foreground mb-4">
+                  Parece que no tienes ningún ciclo registrado.
+                </p>
+                <Dialog open={isNewCycleModalOpen} onOpenChange={setIsNewCycleModalOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-primary text-primary-foreground">
+                      <RefreshCw className="mr-2 h-5 w-5" /> Comienza tu Primer Ciclo
+                    </Button>
+                  </DialogTrigger>
+                  <NewCycleDialog
+                    onConfirm={handleStartNewCycle}
+                    onOpenChange={setIsNewCycleModalOpen}
+                  />
                 </Dialog>
               </div>
             )}
+            
           </CardContent>
         </Card>
       </motion.div>
