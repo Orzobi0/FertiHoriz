@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import CycleRecordItem from '@/components/history/CycleRecordItem.jsx'; // Reutilizamos el item
@@ -33,7 +32,7 @@ const CycleRecordList = ({ cycle, onEditRecord, onDeleteRecord }) => {
             key={record.id}
             record={record}
             onEdit={() => onEditRecord(record, cycle)}
-            onDelete={() => onDeleteRecord(record.id, cycle)}
+            onDelete={() => onDeleteRecord(record.id)}
           />
         ))}
       </div>

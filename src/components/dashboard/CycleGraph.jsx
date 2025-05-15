@@ -68,6 +68,7 @@ function buildPath(points) {
 // ────────────────────────────────────────────────────────────────────────────────
 export default function CycleGraph({ cycle, displayMode = "short" }) {
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isRotated, setIsRotated] = useState(false);
   const [tooltip, setTooltip] = useState({ show: false, x: 0, y: 0, data: null });
 
 
@@ -416,18 +417,54 @@ const GraphSVG = (
     <>
       {Wrapper}
       <Dialog open={isFullScreen} onOpenChange={setIsFullScreen}>
-        <DialogContent className="max-w-4xl w-[95vw] h-[90vh] p-0 flex flex-col">
-          <DialogHeader className="p-4 border-b">
+        <DialogContent className={`max-w-4xl w-[95vw] h-[90vh] p-0 flex flex-col ${isRotated ? 'overflow-auto' : ''}`}
+          style={{
+            maxWidth: isRotated ? '100vw' : undefined,
+            maxHeight: isRotated ? '100vh' : undefined,
+            width: isRotated ? '100vw' : undefined,
+            height: isRotated ? '100vh' : undefined,
+            padding: 0,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <DialogHeader className="p-4 border-b flex flex-row items-center justify-between">
             <DialogTitle className="text-primary">
               Gráfica Completa del Ciclo
             </DialogTitle>
-            <DialogClose className="absolute right-4 top-4">
-              <X className="h-4 w-4" />
-              <span className="sr-only">Cerrar</span>
-            </DialogClose>
+            <div className="flex gap-2 items-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsRotated(r => !r)}
+                className="text-primary hover:bg-primary/10"
+                title="Girar gráfica"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 3V1M10 19v-2M3 10H1m18 0h-2M4.22 4.22l-1.42-1.42M17.2 17.2l-1.42-1.42M4.22 15.78l-1.42 1.42M17.2 2.8l-1.42 1.42" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </Button>
+              <DialogClose className="absolute right-4 top-4">
+                <X className="h-4 w-4" />
+                <span className="sr-only">Cerrar</span>
+              </DialogClose>
+            </div>
           </DialogHeader>
-          <div className="flex-grow overflow-auto p-4">
-            {GraphSVG}
+          <div className="flex-grow overflow-auto p-4 flex items-center justify-center">
+            <div
+              className={`transition-transform duration-300 ${isRotated ? 'rotate-90 origin-center w-[90vh] h-[90vw] max-w-none max-h-none' : ''}`}
+              style={{
+                width: isRotated ? '90vh' : '100%',
+                height: isRotated ? '90vw' : '100%',
+                maxWidth: isRotated ? 'none' : '100%',
+                maxHeight: isRotated ? 'none' : '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {GraphSVG}
+            </div>
           </div>
         </DialogContent>
       </Dialog>

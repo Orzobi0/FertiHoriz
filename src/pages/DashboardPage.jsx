@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button.jsx';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx';
-import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog.jsx';
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog.jsx';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import { toast } from '@/components/ui/use-toast.jsx';
 import { PlusCircle, RefreshCw, Edit3, Trash2 } from 'lucide-react';
@@ -37,8 +37,10 @@ const DashboardPage = () => {
   const [recordToEdit, setRecordToEdit] = useState(null);
 
   const [recordToDelete, setRecordToDelete] = useState(null);
+  const [recordToDeleteData, setRecordToDeleteData] = useState(null);
   const [isConfirmDeleteDialogOpen, setIsConfirmDeleteDialogOpen] = useState(false);
 
+  const [showCycleDetails, setShowCycleDetails] = useState(false);
 
   const loadUserCycles = useCallback(() => {
     if (user) {
@@ -165,7 +167,9 @@ const DashboardPage = () => {
   }, [user, recordToEdit, currentCycle, editFormData, allUserCycles, resetEditForm, loadUserCycles]);
   
   const confirmDeleteRecord = (recordId) => {
+    const record = currentCycle?.records.find(r => r.id === recordId);
     setRecordToDelete(recordId);
+    setRecordToDeleteData(record);
     setIsConfirmDeleteDialogOpen(true);
   };
 
@@ -182,6 +186,7 @@ const DashboardPage = () => {
     toast({ title: "Registro eliminado", description: "El registro ha sido eliminado." });
     setIsConfirmDeleteDialogOpen(false);
     setRecordToDelete(null);
+    setRecordToDeleteData(null);
   }, [user, recordToDelete, currentCycle, allUserCycles, loadUserCycles]);
 
 
@@ -248,6 +253,24 @@ const DashboardPage = () => {
                           </Dialog>
             </div>
             {currentCycle && <CycleGraph cycle={currentCycle} />}
+            {currentCycle && (
+              <div className="mt-4">
+                <Button
+                  variant="outline"
+                  className="mb-2"
+                  onClick={() => setShowCycleDetails((prev) => !prev)}
+                >
+                  {showCycleDetails ? 'Ocultar Detalle del ciclo' : 'Detalle del ciclo'}
+                </Button>
+                {showCycleDetails && (
+                  <CycleRecordList
+                    cycle={currentCycle}
+                    onEditRecord={openEditModal}
+                    onDeleteRecord={confirmDeleteRecord}
+                  />
+                )}
+              </div>
+            )}
             {/* Si no hay ciclos */}
             {!currentCycle && (
               <div className="text-center py-10">
@@ -287,20 +310,29 @@ const DashboardPage = () => {
         />
       </Dialog>
 
-      <AlertDialog open={isConfirmDeleteDialogOpen} onOpenChange={setIsConfirmDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Estás segura?</AlertDialogTitle>
-            <AlertDialogDescription>
+      <Dialog open={isConfirmDeleteDialogOpen} onOpenChange={setIsConfirmDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>¿Estás segura?</DialogTitle>
+            <DialogDescription>
               Esta acción no se puede deshacer. Esto eliminará permanentemente el registro.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setRecordToDelete(null)}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteRecord}>Eliminar</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              {recordToDeleteData && (
+                <div className="mt-2 p-2 bg-muted rounded">
+                  <div><b>Fecha:</b> {recordToDeleteData.date}</div>
+                  <div><b>Día del ciclo:</b> {recordToDeleteData.cycleDay}</div>
+                  {recordToDeleteData.temperature !== null && (
+                    <div><b>Temperatura:</b> {recordToDeleteData.temperature}°C</div>
+                  )}
+                </div>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="outline" onClick={() => { setRecordToDelete(null); setRecordToDeleteData(null); setIsConfirmDeleteDialogOpen(false); }}>Cancelar</Button>
+            <Button variant="destructive" onClick={handleDeleteRecord}>Eliminar</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
     </div>
   );
